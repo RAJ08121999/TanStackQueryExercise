@@ -1,34 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios"
+import { useState } from "react";
+import Navbar from "./components/Navbar";
+import FilterButtons from "./components/FilterButtons";
+import CourseList from "./components/CourseList";
+import Footer from "./components/Footer";
+import Spinner from "./components/Spinner";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [ category , setCategory ] = useState<string>("All");
 
+  const baseUrl = "https://codehelp-apis.vercel.app/api/get-top-courses"
+
+  async function fetchCourseData (){
+    try{
+      const res = await axios.get(baseUrl);
+      return res.data;
+    }
+    catch(error){
+      console.log("Error in fetching data",error)
+    }
+    
+  };
+
+  const {data , isLoading , isError , error } = useQuery({
+    queryKey:["course"],
+    queryFn:fetchCourseData,
+  });
+
+  if(isLoading) return (
+    <div className="w-full h-screen flex justify-center items-center bg-white">
+      <Spinner/>
+    </div>
+  )
+
+  if(isError) return <p>Error in fetching data:{error.message}</p>
+
+ 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className=" w-full min-h-screen flex flex-col items-center bg-white">
+      <Navbar/>
+
+      <div className="w-10/12 h-full flex flex-col">
+
+        <FilterButtons buttonTitle = {data.data} setCategory = {setCategory} category={category} />
+
+        <CourseList courseData = {data.data} category = {category}/>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+
+      <Footer/>
+      
+    </div>
   )
 }
 
