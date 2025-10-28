@@ -1,7 +1,7 @@
 import type { APIResponse } from "../types"
 
 type FilterButtonsProp = {
-    buttonTitle:APIResponse;
+    buttonTitle:APIResponse["data"],
     setCategory:React.Dispatch<React.SetStateAction<string>>
     category:string
 }

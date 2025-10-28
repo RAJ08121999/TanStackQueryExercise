@@ -8,7 +8,7 @@ type CourseListProp = {
 
 const CourseList:React.FC<CourseListProp> = ({courseData,category}) => {
     
-
+  console.log("CourseData from courseList",courseData);
     function getCourses (){
         if(category==="All"){
             const allDataArray = Object.values(courseData).flat();
